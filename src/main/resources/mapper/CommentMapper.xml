@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.codecrab.eblog.mapper.CommentMapper">
+
+    <update id="updateStatus">
+        UPDATE m_comment
+        SET `status`= #{status} ${ew.customSqlSegment}
+    </update>
+
+    <select id="selectComments" resultType="top.codecrab.eblog.vo.CommentVo">
+        SELECT c.*,
+               u.`id`       authorId,
+               u.`username` authorName,
+               u.`avatar`   authorAvatar
+        FROM m_comment c
+                 LEFT JOIN m_user u
+                           ON c.`user_id` = u.`id`
+            ${ew.customSqlSegment}
+    </select>
+
+    <select id="selectCommentsAndPostTitle" resultType="top.codecrab.eblog.vo.CommentVo">
+        SELECT c.*,
+               (SELECT title FROM m_post WHERE id = c.post_id) AS postTitle
+        FROM m_comment c
+            ${ew.customSqlSegment}
+    </select>
+
+    <select id="selectPostCommentCount" resultType="top.codecrab.eblog.common.response.CommentCount">
+        SELECT p.title      postTitle,
+               p.view_count postViewCount,
+               t.*
+        FROM m_post p,
+             (
+                 SELECT COUNT(*) postCommentCount, post_id
+                 FROM m_comment ${ew.customSqlSegment}
+             ) t
+        WHERE p.id = t.post_id
+    </select>
+</mapper>

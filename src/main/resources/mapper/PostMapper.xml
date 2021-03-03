@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.codecrab.eblog.mapper.PostMapper">
+
+    <select id="selectPosts" resultType="top.codecrab.eblog.vo.PostVo">
+        SELECT p.*,
+               u.`id`       authorId,
+               u.`username` authorName,
+               u.`avatar`   authorAvatar,
+               c.`id`       categoryId,
+               c.`name`     categoryName
+        FROM m_post p
+                 LEFT JOIN m_user u
+                           ON p.`user_id` = u.`id`
+                 LEFT JOIN m_category c
+                           ON p.`category_id` = c.`id`
+            ${ew.customSqlSegment}
+    </select>
+
+    <select id="selectOnePost" resultType="top.codecrab.eblog.vo.PostVo">
+        SELECT p.*,
+               u.`id`       authorId,
+               u.`username` authorName,
+               u.`avatar`   authorAvatar,
+               c.`id`       categoryId,
+               c.`name`     categoryName
+        FROM m_post p
+                 LEFT JOIN m_user u
+                           ON p.`user_id` = u.`id`
+                 LEFT JOIN m_category c
+                           ON p.`category_id` = c.`id`
+            ${ew.customSqlSegment}
+    </select>
+
+    <select id="selectPageCollection" resultType="top.codecrab.eblog.vo.PostVo">
+        SELECT p.*,
+               c.created collectionCreated
+        FROM m_post p
+                 RIGHT JOIN m_user_collection c
+                            ON p.id = c.post_id
+            ${ew.customSqlSegment}
+    </select>
+</mapper>

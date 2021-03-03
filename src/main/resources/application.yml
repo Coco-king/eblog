@@ -1,0 +1,67 @@
+server:
+  port: 9090
+  dns-addr: http://localhost:9090
+spring:
+  application:
+    name: eblog
+  # spring 静态资源扫描路径
+  resources:
+    static-locations: classpath:/static/
+  freemarker:
+    #指定freemarker的模板路径和模板的后缀
+    template-loader-path: classpath:/templates/
+    suffix: .ftl
+    # 指定字符集
+    charset: utf-8
+    # 页面不加载缓存，修改即时生效
+    cache: false
+    #指定是否要暴露请求和会话属性
+    expose-request-attributes: true
+    expose-session-attributes: true
+    settings:
+      # 空值处理 加了这个引入就要写绝对路径
+      classic_compatible: true
+      datetime_format: yyyy-MM-dd HH:mm:ss
+      number_format: 0.##
+  datasource:
+    # driver-class-name: com.mysql.cj.jdbc.Driver
+    # 启用mp sql性能分析
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    url: jdbc:p6spy:mysql://localhost:3306/eblog?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+    timeout: 1800000
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1
+        max-idle: 5
+        min-idle: 0
+  mail:
+    protocol: smtp
+    host: smtp.qq.com
+    port: 465
+    auth: true
+    username: codecrab@qq.com
+    password: xxxxxx
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          ssl:
+            enable: true
+shiro-redis:
+  enabled: true
+  redis-manager:
+    host: 127.0.0.1:6379
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**Mapper.xml
+file:
+  upload:
+    dir: ${user.dir}/upload
+
+
