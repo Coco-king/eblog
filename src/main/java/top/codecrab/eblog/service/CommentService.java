@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import top.codecrab.eblog.common.response.CommentCount;
+import top.codecrab.eblog.common.response.Result;
 import top.codecrab.eblog.entity.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
 import top.codecrab.eblog.vo.CommentVo;

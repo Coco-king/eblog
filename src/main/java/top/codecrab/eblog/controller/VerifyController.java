@@ -112,7 +112,7 @@ public class VerifyController extends BaseController {
     @RequestMapping("/logout")
     public String logout() {
         SecurityUtils.getSubject().logout();
-        return "redirect:/index";
+        return "redirect:/login";
     }
 
     @GetMapping("/forgetPass")

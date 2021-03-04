@@ -6,6 +6,6 @@ import lombok.Data;
 public class CommentCount {
     private Long postId;
     private String postTitle;
-    private String postViewCount;
+    private Integer postViewCount;
     private Integer postCommentCount;
 }

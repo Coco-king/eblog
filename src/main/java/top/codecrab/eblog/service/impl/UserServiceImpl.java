@@ -144,7 +144,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         String username = user.getUsername();
         String title = "亲爱的【" + username + "】！请验证您的邮箱";
-        String href = dnsAddr + "/user/activate/" + user.getCode();
+        String href = dnsAddr + "/user/activation/" + user.getCode();
         Map<String, Object> params = new HashMap<>();
         params.put("href", href);
         params.put("username", username);

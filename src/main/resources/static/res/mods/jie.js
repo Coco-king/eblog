@@ -38,7 +38,7 @@ layui.define('fly', function (exports) {
   });
 
   //提交回答
-  fly.form['/jie/reply/'] = function (data, required) {
+  fly.form['/post/reply'] = function (data, required) {
     var tpl = '<li>\
       <div class="detail-about detail-about-reply">\
         <a class="fly-avatar" href="/u/{{ layui.cache.user.uid }}" target="_blank">\
@@ -50,7 +50,7 @@ layui.define('fly', function (exports) {
           </a>\
         </div>\
         <div class="detail-hits">\
-          <span>刚刚</span>\
+          <span>{{ d.user.created}}</span>\
         </div>\
       </div>\
       <div class="detail-body jieda-body photos">\
@@ -91,7 +91,7 @@ layui.define('fly', function (exports) {
     //设置置顶、状态
     , set: function (div) {
       var othis = $(this);
-      fly.json('/api/jie-set/', {
+      fly.json('/admin/jie-set', {
         id: div.data('id')
         , rank: othis.attr('rank')
         , field: othis.attr('field')
@@ -139,7 +139,7 @@ layui.define('fly', function (exports) {
   gather.jiedaActive = {
     zan: function (li) { //赞
       var othis = $(this), ok = othis.hasClass('zanok');
-      fly.json('/api/jieda-zan/', {
+      fly.json('/post/jieda-zan', {
         ok: ok
         , id: li.data('id')
       }, function (res) {
@@ -163,7 +163,7 @@ layui.define('fly', function (exports) {
       var othis = $(this);
       layer.confirm('是否采纳该回答为最佳答案？', function (index) {
         layer.close(index);
-        fly.json('/api/jieda-accept/', {
+        fly.json('/post/jieda-accept', {
           id: li.data('id')
         }, function (res) {
           if (res.status === 0) {
@@ -204,9 +204,9 @@ layui.define('fly', function (exports) {
       });
     }
     , del: function (li) { //删除
-      layer.confirm('确认删除该回答么？', function (index) {
+      layer.confirm('确认删除该评论么？', function (index) {
         layer.close(index);
-        fly.json('/api/jieda-delete/', {
+        fly.json('/post/jieda-delete', {
           id: li.data('id')
         }, function (res) {
           if (res.status === 0) {

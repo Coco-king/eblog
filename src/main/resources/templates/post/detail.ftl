@@ -22,15 +22,25 @@
                             </#if>
 
                             <@shiro.hasRole name="admin">
-                                <span class="layui-btn layui-btn-xs jie-admin" type="del">删除</span>
+                                <span class="layui-btn layui-btn-xs jie-admin" type="set" field="delete">删除</span>
 
-                                <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick"
-                                      rank="1">置顶</span>
-                                <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="0" style="background-color:#ccc;">取消置顶</span> -->
+                                <#if post.level == 0>
+                                    <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick"
+                                          rank="1">置顶</span>
+                                </#if>
+                                <#if post.level gt 0>
+                                    <span class="layui-btn layui-btn-xs jie-admin" type="set"
+                                          field="stick" rank="0" style="background-color:#ccc;">取消置顶</span>
+                                </#if>
 
-                                <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status"
-                                      rank="1">加精</span>
-                                <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="0" style="background-color:#ccc;">取消加精</span> -->
+                                <#if !post.recommend>
+                                    <span class="layui-btn layui-btn-xs jie-admin" type="set"
+                                          field="status" rank="1">加精</span>
+                                </#if>
+                                <#if post.recommend>
+                                    <span class="layui-btn layui-btn-xs jie-admin" type="set"
+                                          field="status" rank="0" style="background-color:#ccc;">取消加精</span>
+                                </#if>
                             </@shiro.hasRole>
                         </div>
                         <span class="fly-list-nums">
@@ -76,23 +86,23 @@
                             <li data-id="${comm.id}" class="jieda-daan">
                                 <a name="item-${comm.id}"></a>
                                 <div class="detail-about detail-about-reply">
-                                    <a class="fly-avatar" href="/user/${comm.authorId}">
+                                    <a class="fly-avatar" href="/user/other/home/${comm.authorName}">
                                         <img src="${comm.authorAvatar}" alt="${comm.authorName}">
                                     </a>
                                     <div class="fly-detail-user">
-                                        <a href="/user/${comm.authorId}" class="fly-link">
+                                        <a href="/user/other/home/${comm.authorName}" class="fly-link">
                                             <cite>${comm.authorName}</cite>
                                             <#if comm.userId == 1>
                                                 <i class="iconfont icon-renzheng" title="认证信息：管理员"></i>
-                                                <i class="layui-badge fly-badge-vip">VIP8</i>
+                                                <i class="layui-badge fly-badge-vip">VIP9</i>
                                             </#if>
                                         </a>
                                         <#if comm.userId == post.userId>
                                             <span>(楼主)</span>
                                         </#if>
                                         <#if comm.userId == 1>
-                                            <span style="color:#5FB878">(管理员)</span>
-                                            <span style="color:#FF9E3F">(社区之光)</span>
+                                            <span style="color:#FF9E3F">(管理员)</span>
+                                        <#--<span style="color:#5FB878">(社区之光)</span>-->
                                         </#if>
                                         <!--
                                         <span style="color:#999">（该号已被封）</span>
@@ -100,29 +110,32 @@
                                     </div>
 
                                     <div class="detail-hits">
-                                        <span>${post.created?string("yyyy年MM月dd日")}</span>
+                                        <span>${comm.created?string("yyyy年MM月dd日")}</span>
                                     </div>
                                     <#if comm.status == 66>
                                         <i class="iconfont icon-caina" title="最佳答案"></i>
                                     </#if>
                                 </div>
-                                <div class="<#--detail-body--> jieda-body photos">
-                                    <p>${comm.content}</p>
+                                <div class="detail-body jieda-body photos" style="line-height: 10px;height: 26px">
+                                    ${comm.content}
                                 </div>
                                 <div class="jieda-reply">
-                                  <span class="jieda-zan zanok" type="zan">
-                                      <i class="iconfont icon-zan"></i>
-                                      <em>${comm.voteUp}</em>
-                                  </span>
+                                    <#--<span class="jieda-zan" type="zan">
+                                        <i class="iconfont icon-zan"></i>
+                                        <em>${comm.voteUp}</em>
+                                    </span>-->
                                     <span type="reply">
                                         <i class="iconfont icon-svgmoban53"></i>
                                         回复
                                     </span>
-                                    <div class="jieda-admin">
-                                        <span type="edit">编辑</span>
-                                        <span type="del">删除</span>
-                                        <span class="jieda-accept" type="accept">采纳</span>
-                                    </div>
+                                    <#if Session["userInfo"]??>
+                                        <div class="jieda-admin">
+                                            <#--<span type="edit">编辑</span>-->
+                                            <#if comm.userId == Session["userInfo"].id || Session["userInfo"].id == post.userId>
+                                                <span type="del">删除</span>
+                                            </#if>
+                                        </div>
+                                    </#if>
                                 </div>
                             </li>
                         </#list>
@@ -137,7 +150,7 @@
                     </ul>
 
                     <div class="layui-form layui-form-pane">
-                        <form action="/jie/reply/" method="post">
+                        <form action="/post/reply" method="post">
                             <div class="layui-form-item layui-form-text">
                                 <a name="comment"></a>
                                 <div class="layui-input-block">
@@ -147,7 +160,7 @@
                                 </div>
                             </div>
                             <div class="layui-form-item">
-                                <input type="hidden" name="jid" value="123">
+                                <input type="hidden" name="postId" value="${post.id}">
                                 <button class="layui-btn" lay-filter="*" lay-submit>提交回复</button>
                             </div>
                         </form>

@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.codecrab.eblog.common.annotation.AccessLimit;
@@ -56,6 +57,14 @@ public class UserController extends BaseController {
 
     @GetMapping("/user/other/home/{username}")
     public String otherHome(@PathVariable("username") String username) {
+        Assert.notBlank(username, "非法参数");
+        getUserHome(username);
+        return "/user/home";
+    }
+
+    @GetMapping("/jump")
+    public String jump() {
+        String username = ServletRequestUtils.getStringParameter(request, "username", "");
         Assert.notBlank(username, "非法参数");
         getUserHome(username);
         return "/user/home";
@@ -141,7 +150,7 @@ public class UserController extends BaseController {
         //status >= 0则为未删除
         IPage<UserMessageVo> page = messageService.paging(getPage(), new QueryWrapper<UserMessage>()
                 .eq("to_user_id", ShiroUtil.getProfileId())
-                .ge("status", 0).orderByAsc("created"));
+                .ge("status", 0).orderByDesc("created"));
         //把vo类型的信息集合转为普通类型的
         List<UserMessage> messages = page.getRecords().stream().map(vo -> {
             UserMessage userMessage = new UserMessage();
@@ -201,6 +210,7 @@ public class UserController extends BaseController {
         //重新分配盐
         user.setSalt(UUID.randomUUID().toString(true));
         user.setPassword(SecureUtil.md5(pass + user.getSalt()));
+        user.setModified(new Date());
         userService.updateById(user);
         return Result.success().action("/user/set#pass");
     }
@@ -231,7 +241,7 @@ public class UserController extends BaseController {
      * 用户点击链接后激活邮箱
      */
     @AccessLimit(maxCount = 5, seconds = 60 * 60)
-    @RequestMapping("/user/activate/{code}")
+    @RequestMapping("/user/activation/{code}")
     public String activateEmail(@PathVariable("code") String code) {
         User user = userService.getOne(new QueryWrapper<User>().eq("code", code));
         if (user == null) {

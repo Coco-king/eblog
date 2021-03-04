@@ -39,11 +39,15 @@
                                 <li>
                                     <a class="jie-title" href="/post/{{ d.id }}" target="_blank">{{ d.title }}</a>
                                     <i>{{ layui.util.toDateString(d.created) }}</i>
-                                    <a class="mine-edit" href="/post/edit/{{ d.id }}">编辑</a>
+                                    <a class="mine-edit" href="/post/edit?id={{ d.id }}">编辑</a>
+                                    <a class="mine-edit" href="/post/delete?id={{ d.id }}"
+                                       style="height: 20px;margin-left: 5px;background-color: #ff8e99">
+                                        删除
+                                    </a>
                                     {{# if (d.status === 0) { }}
-                                    <span class="layui-badge"
-                                          style="background-color: #FF5722;margin-left: 5px;"
-                                    >审核中</span>
+                                    <span class="layui-badge" style="background-color: #FF5722;margin-left: 5px;">
+                                        审核中
+                                    </span>
                                     {{# } else { }}
 
                                     {{# } }}

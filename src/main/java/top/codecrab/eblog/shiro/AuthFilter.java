@@ -29,7 +29,7 @@ public class AuthFilter extends UserFilter {
             if (!authenticated) {
                 //返回json数据
                 response.setContentType("application/json;charset=UTF-8");
-                response.getWriter().print(JSONUtil.toJsonStr(Result.fail("登录授权信息已过期，请刷新页面并重新登陆")));
+                response.getWriter().print(JSONUtil.toJsonStr(Result.fail("登录授权信息已过期或未登录，请刷新页面或登陆")));
             }
         } else {
             //如果是url请求，走父类的方法

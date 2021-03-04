@@ -60,11 +60,21 @@ public class ShiroConfig {
         filterMap.put("/user/activate", "auth");
         filterMap.put("/user/message", "auth");
         filterMap.put("/user/index", "auth");
+        filterMap.put("/user/public", "auth");
+        filterMap.put("/user/collection", "auth");
+        filterMap.put("/user/repass", "auth");
+
+        filterMap.put("/message/remove", "auth");
+        filterMap.put("/message/read", "auth");
 
         filterMap.put("/collection/add", "auth");
         filterMap.put("/collection/remove", "auth");
+        filterMap.put("/collection/find", "auth");
 
         filterMap.put("/post/edit", "auth");
+        filterMap.put("/post/submit", "auth");
+        filterMap.put("/post/delete", "auth");
+        filterMap.put("/post/reply", "auth");
 
         filterMap.put("/**", "anon");
         shiroFilter.setFilterChainDefinitionMap(filterMap);

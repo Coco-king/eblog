@@ -14,6 +14,8 @@
 
             <script src="/res/js/jquery.min.js"></script>
             <script src="/res/js/jquery.cookie.js"></script>
+            <script src="/res/js/sockjs.js"></script>
+            <script src="/res/js/stomp.js"></script>
             <script src="/res/layui/layui.js"></script>
         </head>
         <body>
@@ -40,6 +42,50 @@
               }).extend({
                 fly: 'index'
               }).use('fly');
+            </script>
+
+            <script>
+
+              //新消息通知
+              function showTips(count) {
+                var elemUser = $('.fly-nav-user');
+                var msg = $('<a class="fly-nav-msg" href="javascript:;">' + count + '</a>');
+                elemUser.append(msg);
+                msg.on('click', function () {
+                  fly.json('/message/read', {}, function (res) {
+                    if (res.status === 0) {
+                      location.href = '/user/message';
+                    }
+                  });
+                });
+                layer.tips('你有 ' + count + ' 条未读消息', msg, {
+                  tips: 3
+                  , tipsMore: true
+                  , fixed: true
+                });
+                msg.on('mouseenter', function () {
+                  layer.closeAll('tips');
+                })
+              }
+
+              $(function () {
+                //新消息通知
+                var elemUser = $('.fly-nav-user');
+                if (layui.cache.user.uid !== -1 && elemUser[0]) {
+                  //创建websocket连接客户端
+                  var websocket = new SockJS("/websocket");
+                  //交给stomp管理
+                  var stompClient = Stomp.over(websocket);
+                  //建立连接
+                  stompClient.connect({}, function (frame) {
+                    //订阅user
+                    stompClient.subscribe("/user/" + ${userInfo.id} + "/messageCount", function (res) {
+                      //弹窗提醒
+                      showTips(res.body);
+                    })
+                  });
+                }
+              });
             </script>
         </body>
     </html>

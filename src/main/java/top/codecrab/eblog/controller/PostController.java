@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.codecrab.eblog.common.response.Result;
 import top.codecrab.eblog.entity.Category;
+import top.codecrab.eblog.entity.Comment;
 import top.codecrab.eblog.entity.Post;
 import top.codecrab.eblog.entity.UserCollection;
 import top.codecrab.eblog.utils.ShiroUtil;
@@ -163,13 +164,67 @@ public class PostController extends BaseController {
             res = postService.updateById(one);
             id = one.getId();
         }
-        return res ? Result.success().action("/post/" + id) : Result.fail("未知原因，发布失败");
+        return res ? Result.success((one == null ? "发布" : "编辑") + "成功，请等待审核")
+                .action("/post/" + id) : Result.fail("未知原因，发布失败");
     }
 
+    /**
+     * 删除文章
+     */
     @ResponseBody
     @PostMapping("/post/delete")
     public Result postDelete(Long id) {
         postService.delete(id);
         return Result.success().action("/user/index");
+    }
+
+    @GetMapping("/post/delete")
+    public String delete(Long id) {
+        postService.delete(id);
+        return "/user/index";
+    }
+
+    /**
+     * 评论
+     */
+    @ResponseBody
+    @PostMapping("/post/reply")
+    public Result postReply(Long postId, String content) {
+        return postService.postReply(postId, content);
+    }
+
+    /**
+     * 删除评论
+     */
+    @ResponseBody
+    @PostMapping("/post/jieda-delete")
+    public Result jiedaDelete(Long id) {
+        return postService.jiedaDelete(id);
+    }
+
+    /**
+     * 采纳评论
+     */
+    @ResponseBody
+    @PostMapping("/post/jieda-accept")
+    public Result jiedaAccept(Long id) {
+        Comment comment = commentService.getById(id);
+        Assert.notNull(comment, "找不到该评论或已被删除");
+        comment.setStatus(66);
+        commentService.updateById(comment);
+        return Result.success();
+    }
+
+    /**
+     * 评论赞
+     */
+    @ResponseBody
+    @PostMapping("/post/jieda-zan")
+    public Result jiedaZan(Long id, boolean ok) {
+        Comment comment = commentService.getById(id);
+        Assert.notNull(comment, "找不到该评论或已被删除");
+        comment.setVoteUp(comment.getVoteUp() + (ok ? -1 : 1));
+        commentService.updateById(comment);
+        return Result.success();
     }
 }

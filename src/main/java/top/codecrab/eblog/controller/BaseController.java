@@ -37,6 +37,9 @@ public class BaseController {
     @Autowired
     protected CategoryService categoryService;
 
+    @Autowired
+    protected AdminService adminService;
+
     /**
      * 抽取获取分页bean
      *
