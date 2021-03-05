@@ -28,11 +28,11 @@
                         <li class="layui-form-li">
                             <label for="activate">您的邮箱：</label>
                             <span class="layui-form-text">${user.email}
-                                <#if user.status=0>
+                                <#if user.status gt -1>
                                     <em style="color:#999;">（已成功激活）</em>
                                     <a class="layui-form-a" style="color:#4f99cf;" href="/user/set">更换邮箱</a>
                                 </#if>
-                                <#if user.status=-1>
+                                <#if user.status = -1>
                                     <em style="color:#c00;">（尚未激活）</em>
                                     <a class="layui-form-a" style="color:#4f99cf;" id="LAY-activate" href="javascript:;"
                                        email="${user.email}">发送激活邮件</a>

@@ -83,5 +83,13 @@
                 密保邮箱
             </a>
         </li>
+        <@shiro.hasRole name="admin">
+            <li class="layui-nav-item <#if index==5>layui-this</#if>">
+                <a href="/admin/check">
+                    <i class="layui-icon">&#xe613;</i>
+                    管理中心
+                </a>
+            </li>
+        </@shiro.hasRole>
     </ul>
 </#macro>

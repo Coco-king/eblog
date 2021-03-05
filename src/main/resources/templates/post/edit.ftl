@@ -48,7 +48,7 @@
                                                placeholder="请输入验证码" autocomplete="off" class="layui-input">
                                     </div>
                                     <div class="layui-form-mid" style="padding: 0!important;">
-                                        <img id="captcha" src="/captcha.jpg" alt="验证码" style="cursor:pointer;">
+                                        <img id="captcha" src="/postCaptcha.jpg" alt="验证码" style="cursor:pointer;">
                                     </div>
                                 </div>
                                 <div class="layui-form-item">
@@ -67,7 +67,7 @@
 
       //刷新验证码
       $('#captcha').click(function () {
-        this.src = "/captcha.jpg";
+        this.src = "/postCaptcha.jpg";
       })
     </script>
 </@layout>

@@ -19,15 +19,38 @@ import top.codecrab.eblog.entity.Category;
 import top.codecrab.eblog.entity.Comment;
 import top.codecrab.eblog.entity.Post;
 import top.codecrab.eblog.entity.UserCollection;
+import top.codecrab.eblog.search.mq.MqTypes;
+import top.codecrab.eblog.utils.CommonUtils;
 import top.codecrab.eblog.utils.ShiroUtil;
 import top.codecrab.eblog.utils.ValidationUtil;
 import top.codecrab.eblog.vo.CommentVo;
 import top.codecrab.eblog.vo.PostVo;
 
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 public class PostController extends BaseController {
+
+    @GetMapping("/postCaptcha.jpg")
+    public void postCaptcha(HttpServletResponse response) throws IOException {
+        //验证码文字
+        String text = producer.createText();
+        //放入redis
+        redisTemplate.opsForValue().set(POST_CAPTCHA_KEY + CommonUtils.getRemoteHost(request), text, 300, TimeUnit.SECONDS);
+        //验证码图片
+        BufferedImage image = producer.createImage(text);
+        //设置页面不缓存
+        response.setHeader("Cache-Control", "no-store, no-cache");
+        //设置写入文件的类型
+        response.setContentType("image/jpeg");
+        //写入到页面
+        ImageIO.write(image, "jpg", response.getOutputStream());
+    }
 
     @GetMapping("/category/{id:\\d*}")
     public String category(@PathVariable("id") Long id, Boolean recommend) {
@@ -126,9 +149,8 @@ public class PostController extends BaseController {
     @ResponseBody
     @PostMapping("/post/submit")
     public Result postSubmit(Post post, String vercode) {
-        Session session = SecurityUtils.getSubject().getSession();
-        String captcha = (String) session.getAttribute(KAPTCHA_SESSION_KEY);
-        session.removeAttribute(KAPTCHA_SESSION_KEY);
+        String captcha = redisTemplate.opsForValue().get(POST_CAPTCHA_KEY + CommonUtils.getRemoteHost(request));
+        redisTemplate.delete(POST_CAPTCHA_KEY + CommonUtils.getRemoteHost(request));
         if (!StringUtils.equals(vercode, captcha))
             return Result.fail("图形验证码不匹配或已过期，请刷新后重试");
         ValidationUtil.ValidResult validResult = ValidationUtil.validateBean(post);
@@ -153,6 +175,12 @@ public class PostController extends BaseController {
             post.setStatus(0); //0表示未审核，1表示审核 -1删除
             res = postService.save(post);
             id = post.getId();
+
+            //该分类下文章个数加1
+            Category category = categoryService.getById(post.getCategoryId());
+            Assert.notNull(category, "找不到分类");
+            category.setPostCount(category.getPostCount() + 1);
+            categoryService.updateById(category);
         } else {
             //编辑
             Assert.isTrue(one.getUserId().equals(ShiroUtil.getProfileId()), "您没有权限修改不属于您的文章");
@@ -164,6 +192,10 @@ public class PostController extends BaseController {
             res = postService.updateById(one);
             id = one.getId();
         }
+
+        //发送消息到队列
+        this.sendMsg(MqTypes.POST_INSERT_ROUTING_KEY, id);
+
         return res ? Result.success((one == null ? "发布" : "编辑") + "成功，请等待审核")
                 .action("/post/" + id) : Result.fail("未知原因，发布失败");
     }
@@ -175,12 +207,18 @@ public class PostController extends BaseController {
     @PostMapping("/post/delete")
     public Result postDelete(Long id) {
         postService.delete(id);
+
+        //发送消息到队列
+        this.sendMsg(MqTypes.POST_REMOVE_ROUTING_KEY, id);
         return Result.success().action("/user/index");
     }
 
     @GetMapping("/post/delete")
     public String delete(Long id) {
         postService.delete(id);
+
+        //发送消息到队列
+        this.sendMsg(MqTypes.POST_REMOVE_ROUTING_KEY, id);
         return "/user/index";
     }
 

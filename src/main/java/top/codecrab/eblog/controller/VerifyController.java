@@ -3,12 +3,10 @@ package top.codecrab.eblog.controller;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.google.code.kaptcha.Producer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.session.Session;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,19 +20,18 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 public class VerifyController extends BaseController {
-
-    @Autowired
-    private Producer producer;
 
     @GetMapping("/captcha.jpg")
     public void captcha(HttpServletResponse response) throws IOException {
         //验证码文字
         String text = producer.createText();
         //放入shiro的session中
-        SecurityUtils.getSubject().getSession().setAttribute(KAPTCHA_SESSION_KEY, text);
+        SecurityUtils.getSubject().getSession().setAttribute(CAPTCHA_SESSION_KEY, text);
         //验证码图片
         BufferedImage image = producer.createImage(text);
         //设置页面不缓存
@@ -86,9 +83,9 @@ public class VerifyController extends BaseController {
         //获取当前的session
         Session session = SecurityUtils.getSubject().getSession();
         //取出验证码
-        String captcha = (String) session.getAttribute(KAPTCHA_SESSION_KEY);
+        String captcha = (String) session.getAttribute(CAPTCHA_SESSION_KEY);
         //删除验证码，防止暴力破解
-        session.removeAttribute(KAPTCHA_SESSION_KEY);
+        session.removeAttribute(CAPTCHA_SESSION_KEY);
         ValidationUtil.ValidResult validResult = ValidationUtil.validateBean(user);
         if (validResult.hasErrors()) {
             return Result.fail(validResult.getErrors());
@@ -124,11 +121,9 @@ public class VerifyController extends BaseController {
     @GetMapping("/sendForgetCode")
     public Result sendForgetCode(String email) {
         if (StringUtils.isBlank(email)) return Result.fail("请输入已激活的邮箱");
-        //获取当前的session
-        Session session = SecurityUtils.getSubject().getSession();
-        //验证码存入session
-        String code = producer.createText();
-        session.setAttribute(FORGET_KAPTCHA_SESSION_KEY, code);
+        //验证码存入redis
+        String code = producer.createText().toUpperCase();
+        redisTemplate.opsForValue().set(FORGET_CAPTCHA_KEY + email, code, 300, TimeUnit.SECONDS);
         //发送邮件
         return userService.sendForgetEmail(email, code);
     }
@@ -139,8 +134,8 @@ public class VerifyController extends BaseController {
         if (StringUtils.isBlank(code)) return Result.fail("请输入验证码");
         //获取当前的session
         Session session = SecurityUtils.getSubject().getSession();
-        String captcha = (String) session.getAttribute(KAPTCHA_SESSION_KEY);
-        session.removeAttribute(KAPTCHA_SESSION_KEY);
+        String captcha = (String) session.getAttribute(CAPTCHA_SESSION_KEY);
+        session.removeAttribute(CAPTCHA_SESSION_KEY);
         if (!StringUtils.equals(code, captcha)) return Result.fail("图形验证码不匹配或已过期");
         return Result.success();
     }
@@ -148,10 +143,8 @@ public class VerifyController extends BaseController {
     @ResponseBody
     @PostMapping("/forgetPass")
     public Result doForgetPass(String email, String pass, String repass, String vercode) {
-        //获取当前的session
-        Session session = SecurityUtils.getSubject().getSession();
         //取出验证码
-        String captcha = (String) session.getAttribute(FORGET_KAPTCHA_SESSION_KEY);
+        String captcha = redisTemplate.opsForValue().get(FORGET_CAPTCHA_KEY + email);
         //删除验证码，防止暴力破解
         //session.removeAttribute(FORGET_KAPTCHA_SESSION_KEY);
         if (!StringUtils.equals(vercode, captcha)) return Result.fail("验证码有误");

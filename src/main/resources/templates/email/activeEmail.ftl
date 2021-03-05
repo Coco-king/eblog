@@ -84,6 +84,10 @@
                 color: #15adff;
                 background-color: #f7faff;
             }
+
+            .lay {
+                margin-top: 60px;
+            }
         </style>
     </head>
 
@@ -106,18 +110,13 @@
                         <p style="padding-bottom: 20px;display: block;line-height: 10px; font-size: 20px;">
                             ${(params.href)!"www.codecrab.top"}
                         </p>
-                        <style>
-                            .lay {
-                                margin-top: 60px;
-                            }
-                        </style>
                     </#if>
                     <#if params.type==1>
                         <div>您的验证码为：${(params.code)}</div>
                     </#if>
                 </div>
 
-                <p class="lay">您的邮箱：<b><span>${(params.email)!""}</span></b></p>
+                <p class="<#if params.type==0>lay</#if>">您的邮箱：<b><span>${(params.email)!""}</span></b></p>
                 <p>您注册时的日期：<b><span>${(params.created?string("yyyy-MM-dd HH:mm:ss"))!""}</span></b></p>
                 <p>当您在使用本网站时，务必要遵守法律法规</p>
                 <p>如果您有什么疑问可以联系管理员，Email: <b>wg3060550682@gmail.com</b></p>

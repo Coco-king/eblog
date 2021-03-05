@@ -39,6 +39,11 @@
             <a href="javascript:void(0);" class="layui-btn layui-btn-primary fly-imActive" data-type="addFriend">加为好友</a>
             <a href="javascript:void(0);" class="layui-btn layui-btn-normal fly-imActive" data-type="chat">发起会话</a>
         </div>-->
+        <#if user.status < 0>
+            <div class="fly-msg" style="margin-top: 15px;">
+                您的邮箱尚未验证，这比较影响您的帐号安全，<a href="/user/activate">立即去激活？</a>
+            </div>
+        </#if>
     </div>
 
     <div class="layui-container">

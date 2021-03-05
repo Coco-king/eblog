@@ -138,8 +138,9 @@ public class UserController extends BaseController {
     @ResponseBody
     @GetMapping("/user/collection")
     public Result userCollection() {
+        System.out.println(ShiroUtil.getProfileId());
         QueryWrapper<Post> wrapper = new QueryWrapper<Post>()
-                .eq("p.user_id", ShiroUtil.getProfileId())
+                .eq("c.user_id", ShiroUtil.getProfileId())
                 .ge("p.status", 1);
         IPage<PostVo> page = postService.selectPageCollection(getPage(), wrapper);
         return Result.success(page);

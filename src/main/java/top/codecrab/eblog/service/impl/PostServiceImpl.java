@@ -16,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.codecrab.eblog.common.response.CommentCount;
 import top.codecrab.eblog.common.response.Result;
-import top.codecrab.eblog.entity.Comment;
-import top.codecrab.eblog.entity.Post;
-import top.codecrab.eblog.entity.User;
-import top.codecrab.eblog.entity.UserMessage;
+import top.codecrab.eblog.entity.*;
 import top.codecrab.eblog.mapper.CommentMapper;
 import top.codecrab.eblog.mapper.PostMapper;
 import top.codecrab.eblog.service.*;
@@ -65,6 +62,9 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
 
     @Autowired
     private WebSocketService socketService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Override
     public IPage<PostVo> paging(Page<PostVo> page, Long categoryId, Long userId, Integer level, Boolean recommend, String order) {
@@ -156,6 +156,12 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         //逻辑删除文章
         post.setStatus(-1);
         this.updateById(post);
+
+        //该分类下文章个数减1
+        Category category = categoryService.getById(post.getCategoryId());
+        Assert.notNull(category, "找不到分类");
+        category.setPostCount(category.getPostCount() - 1);
+        categoryService.updateById(category);
 
         //删除关联的收藏
         collectionService.removeByMap(MapUtil.of("post_id", id));

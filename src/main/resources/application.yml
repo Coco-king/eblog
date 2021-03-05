@@ -41,13 +41,28 @@ spring:
         max-wait: -1
         max-idle: 5
         min-idle: 0
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+  elasticsearch:
+    rest:
+      uris: 127.0.0.1:9200,127.0.0.1:9201
+  rabbitmq:
+    host: 127.0.0.1
+    virtual-host: /
+    username: guest
+    password: guest
+    connection-timeout: 5000
+    template:
+      exchange: EBLOG_POST_EXCHANGE
   mail:
     protocol: smtp
     host: smtp.qq.com
     port: 465
     auth: true
     username: codecrab@qq.com
-    password: xxxxxx
+    password: rubukrzxvthaidbg
     default-encoding: UTF-8
     properties:
       mail:
