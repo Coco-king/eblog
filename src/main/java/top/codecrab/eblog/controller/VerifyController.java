@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import top.codecrab.eblog.common.response.Result;
 import top.codecrab.eblog.entity.User;
+import top.codecrab.eblog.entity.UserMessage;
 import top.codecrab.eblog.utils.ValidationUtil;
 
 import javax.imageio.ImageIO;

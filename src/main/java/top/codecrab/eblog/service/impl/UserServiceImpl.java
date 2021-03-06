@@ -15,9 +15,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.codecrab.eblog.common.response.Result;
 import top.codecrab.eblog.entity.User;
+import top.codecrab.eblog.entity.UserMessage;
 import top.codecrab.eblog.mapper.UserMapper;
+import top.codecrab.eblog.service.UserMessageService;
 import top.codecrab.eblog.service.UserService;
 import top.codecrab.eblog.shiro.AccountProfile;
+import top.codecrab.eblog.utils.CommonUtils;
 import top.codecrab.eblog.utils.EMailUtils;
 import top.codecrab.eblog.utils.ShiroUtil;
 import top.codecrab.eblog.utils.ValidationUtil;
@@ -44,6 +47,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private EMailUtils eMailUtils;
 
+    @Autowired
+    private UserMessageService messageService;
+
     @Override
     @Transactional
     public Result register(User user) {
@@ -59,6 +65,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user = packageUser(user);
         //执行保存
         boolean save = this.save(user);
+        if (save) {
+            //向用户发送系统消息
+            UserMessage message = new UserMessage();
+            message.setFromUserId(0L);
+            message.setToUserId(user.getId());
+            message.setPostId(0L);
+            message.setCommentId(0L);
+            message.setContent("欢迎加入竹隐寒烟！请到个人中心激活邮箱吧！");
+            message.setType(0);
+            message.setCreated(new Date());
+            message.setModified(message.getCreated());
+            message.setStatus(0);
+            messageService.save(message);
+        }
         return save ? Result.success() : Result.fail("注册用户出现意外错误");
     }
 
@@ -194,7 +214,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         result.setCreated(now);
         result.setWechat(null);
         result.setVipLevel(0);
-        result.setSign(null);
+        result.setSign(CommonUtils.getSign());
         result.setPostCount(0);
         result.setPoint(0);
         result.setMobile(null);

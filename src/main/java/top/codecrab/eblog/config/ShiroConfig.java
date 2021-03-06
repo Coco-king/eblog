@@ -76,6 +76,8 @@ public class ShiroConfig {
         filterMap.put("/post/delete", "auth");
         filterMap.put("/post/reply", "auth");
 
+        filterMap.put("/admin/**", "auth");
+
         filterMap.put("/**", "anon");
         shiroFilter.setFilterChainDefinitionMap(filterMap);
 

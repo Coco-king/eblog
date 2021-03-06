@@ -1,6 +1,20 @@
 package top.codecrab.eblog.utils;
 
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONUtil;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+
 import javax.servlet.http.HttpServletRequest;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 public class CommonUtils {
 
@@ -21,4 +35,14 @@ public class CommonUtils {
         return ip.equals("0:0:0:0:0:0:0:1") ? "127.0.0.1" : ip;
     }
 
+    /**
+     * 获取一言的sign
+     */
+    public static String getSign() {
+        String url = "https://v1.hitokoto.cn?encode=json&charset=utf-8&c=a&c=b&c=d&c=e&c=f&c=g&c=h&c=i&c=j&c=k&c=l&c=c";
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response =
+                restTemplate.exchange(URI.create(url), HttpMethod.GET, new HttpEntity<>(null), String.class);
+        return MapUtil.getStr(JSONUtil.toBean(response.getBody(), Map.class), "hitokoto");
+    }
 }

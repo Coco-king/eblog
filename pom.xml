@@ -124,6 +124,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
+        <!--tio 通讯聊天-->
+        <dependency>
+            <groupId>org.t-io</groupId>
+            <artifactId>tio-websocket-server</artifactId>
+            <version>3.7.1.v20210106-RELEASE</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

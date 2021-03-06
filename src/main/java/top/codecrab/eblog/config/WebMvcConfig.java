@@ -11,7 +11,7 @@ import top.codecrab.eblog.common.interceptor.SessionInterceptor;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
-    UploadConfig uploadConfig;
+    Consts consts;
 
     //防止恶意访问
     @Autowired
@@ -20,7 +20,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/upload/avatar/**")
-                .addResourceLocations("file:///" + uploadConfig.getUploadDir() + "/avatar/");
+                .addResourceLocations("file:///" + consts.getUploadDir() + "/avatar/");
     }
 
     @Override

@@ -1,0 +1,58 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:latest
+    container_name: eblog-mysql
+    ports:
+      - 33306:3306
+    environment: # 指定用户root的密码
+      - MYSQL_ROOT_PASSWORD=WangXX666..666
+  redis:
+    image: redis:latest
+    container_name: eblog-redis
+    ports:
+      - 16379:6379
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis_data/:/data/
+  elasticsearch:
+    image: elasticsearch:7.6.2
+    container_name: eblog-elasticsearch
+    volumes:
+      - ./data/elasticsearch/data:/usr/share/elasticsearch/data
+    environment:
+      - "ES_JAVA_OPTS=-Xms128m -Xmx256m"
+      - "discovery.type=single-node"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 9200:9200
+      - 9300:9300
+  rabbitmq:
+    image: rabbitmq:3.8.14-management
+    container_name: eblog-rabbitmq
+    ports:
+      - 15673:15672        #客户端连接端口映射
+      - 5672:5672
+    restart: always
+    volumes:
+      - ./data:/var/lib/rabbitmq    #数据卷映射
+    environment:
+      - RABBITMQ_DEFAULT_USER=codecrab
+      - RABBITMQ_DEFAULT_PASS=WangXX666..666
+  eblog:
+    image: eblog:latest
+    build: . # 表示以当前目录下的Dockerfile开始构建镜像
+    ports:
+      - 80:80
+      - 9326:9326
+    volumes:
+      - ./upload:/upload
+    depends_on: # 依赖与mysql、redis，其实可以不填，默认已经表示可以
+      - mysql
+      - redis
+      - elasticsearch
+      - rabbitmq

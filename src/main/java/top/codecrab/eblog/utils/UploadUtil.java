@@ -4,13 +4,12 @@ import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import top.codecrab.eblog.common.response.Result;
-import top.codecrab.eblog.config.UploadConfig;
+import top.codecrab.eblog.config.Consts;
 import top.codecrab.eblog.shiro.AccountProfile;
 
 import java.io.File;
@@ -22,7 +21,7 @@ import java.util.Date;
 public class UploadUtil {
 
     @Autowired
-    UploadConfig uploadConfig;
+    Consts consts;
 
     public final static String TYPE_AVATAR = "avatar";
 
@@ -43,7 +42,7 @@ public class UploadUtil {
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
         log.info("上传的后缀名为：" + suffixName);
         // 文件上传后的路径
-        String filePath = uploadConfig.getUploadDir();
+        String filePath = consts.getUploadDir();
 
         if ("avatar".equalsIgnoreCase(type)) {
             AccountProfile profile = (AccountProfile) SecurityUtils.getSubject().getPrincipal();

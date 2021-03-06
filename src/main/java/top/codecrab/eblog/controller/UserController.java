@@ -2,6 +2,7 @@ package top.codecrab.eblog.controller;
 
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.lang.UUID;
@@ -152,16 +153,20 @@ public class UserController extends BaseController {
         IPage<UserMessageVo> page = messageService.paging(getPage(), new QueryWrapper<UserMessage>()
                 .eq("to_user_id", ShiroUtil.getProfileId())
                 .ge("status", 0).orderByDesc("created"));
-        //把vo类型的信息集合转为普通类型的
-        List<UserMessage> messages = page.getRecords().stream().map(vo -> {
-            UserMessage userMessage = new UserMessage();
-            BeanUtil.copyProperties(vo, userMessage);
-            //设置为消息已读
-            userMessage.setStatus(1);
-            return userMessage;
-        }).collect(Collectors.toList());
-        //执行更新
-        messageService.updateBatchById(messages);
+
+        List<UserMessageVo> records = page.getRecords();
+        if (CollectionUtil.isNotEmpty(records)) {
+            //把vo类型的信息集合转为普通类型的
+            List<UserMessage> messages = records.stream().map(vo -> {
+                UserMessage userMessage = new UserMessage();
+                BeanUtil.copyProperties(vo, userMessage);
+                //设置为消息已读
+                userMessage.setStatus(1);
+                return userMessage;
+            }).collect(Collectors.toList());
+            //执行更新
+            messageService.updateBatchById(messages);
+        }
         request.setAttribute("pageData", page);
         return "/user/message";
     }

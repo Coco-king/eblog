@@ -33,7 +33,10 @@
             <i class="iconfont icon-chengshi"></i><span>来自${user.city}</span>
         </p>
 
-        <p class="fly-home-sign">（${user.sign!'这个人很懒，什么都没留下'}）</p>
+        <#--<p class="fly-home-sign">（${user.sign!'这个人很懒，什么都没留下'}）</p>-->
+        <a href="https://hitokoto.cn/" target="_blank" style="display: block" class="fly-home-sign">
+            （${user.sign}）
+        </a>
 
         <#--<div class="fly-sns" data-user="">
             <a href="javascript:void(0);" class="layui-btn layui-btn-primary fly-imActive" data-type="addFriend">加为好友</a>

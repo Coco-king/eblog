@@ -40,7 +40,7 @@
                                         通过
                                     </a>
                                     <a class="mine-edit" href="/admin/delete?id={{ d.id }}"
-                                       style="height: 20px;margin-left: 5px;background-color: #ff8e99">
+                                       style="height: 20px;margin-left: 5px;background-color: #393d49">
                                         删除
                                     </a>
                                 </li>

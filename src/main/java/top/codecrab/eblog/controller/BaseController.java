@@ -57,6 +57,9 @@ public class BaseController {
     @Autowired
     protected StringRedisTemplate redisTemplate;
 
+    @Autowired
+    protected ChatService chatService;
+
     /**
      * 抽取获取分页bean
      *

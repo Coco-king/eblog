@@ -12,11 +12,13 @@
             <link rel="stylesheet" href="/res/layui/css/layui.css">
             <link rel="stylesheet" href="/res/css/global.css">
 
+            <script src="/res/layui/layui.js"></script>
             <script src="/res/js/jquery.min.js"></script>
             <script src="/res/js/jquery.cookie.js"></script>
             <script src="/res/js/sockjs.js"></script>
             <script src="/res/js/stomp.js"></script>
-            <script src="/res/layui/layui.js"></script>
+            <script src="/res/js/im.js"></script>
+            <script src="/res/js/chat.js"></script>
         </head>
         <body>
 
