@@ -35,11 +35,14 @@
                                     </div>
                                 </div>
                                 <div class="layui-form-item layui-form-text">
-                                    <div class="layui-input-block">
+                                    <div id="test-editormd">
+                                        <textarea style="display:none;" name="content">${post.content}</textarea>
+                                    </div>
+                                    <#--<div class="layui-input-block">
                                         <textarea id="L_content" name="content" required lay-verify="required"
                                                   placeholder="详细描述" class="layui-textarea fly-editor"
                                                   style="height: 260px;">${post.content}</textarea>
-                                    </div>
+                                    </div>-->
                                 </div>
                                 <div class="layui-form-item">
                                     <label for="L_vercode" class="layui-form-label">人类验证</label>
@@ -64,6 +67,13 @@
 
     <script>
       layui.cache.page = 'jie';
+
+      $(function () {
+        var testEditor = editormd("test-editormd", {
+          height: 640,
+          path: '/res/lib/',
+        });
+      });
 
       //刷新验证码
       $('#captcha').click(function () {

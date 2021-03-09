@@ -10,10 +10,8 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import top.codecrab.eblog.common.response.Result;
 import top.codecrab.eblog.entity.Category;
 import top.codecrab.eblog.entity.Comment;
@@ -22,6 +20,7 @@ import top.codecrab.eblog.entity.UserCollection;
 import top.codecrab.eblog.search.mq.MqTypes;
 import top.codecrab.eblog.utils.CommonUtils;
 import top.codecrab.eblog.utils.ShiroUtil;
+import top.codecrab.eblog.utils.UploadUtil;
 import top.codecrab.eblog.utils.ValidationUtil;
 import top.codecrab.eblog.vo.CommentVo;
 import top.codecrab.eblog.vo.PostVo;
@@ -31,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Controller
@@ -83,6 +83,8 @@ public class PostController extends BaseController {
         //增加阅读量到缓存
         postService.cacheViewCount(postVo, request);
 
+        //页面markdown显示有问题，在前面换一行就没事了
+        postVo.setContent("\n" + postVo.getContent());
         request.setAttribute("post", postVo);
         request.setAttribute("pageData", page);
         request.setAttribute("currentCategoryId", postVo.getCategoryId());
@@ -160,6 +162,9 @@ public class PostController extends BaseController {
         boolean res;
         Long id;
         Post one = postService.getById(post.getId());
+        Long profileId = ShiroUtil.getProfileId();
+        if (profileId == null)
+            return Result.fail("请先登录再尝试编辑").action("/login");
         if (one == null) {
             //新增
             post.setViewCount(0);
@@ -171,8 +176,12 @@ public class PostController extends BaseController {
             post.setModified(post.getCreated());
             post.setVoteUp(0);
             post.setVoteDown(0);
-            post.setUserId(ShiroUtil.getProfileId());
-            post.setStatus(0); //0表示未审核，1表示审核 -1删除
+            post.setUserId(profileId);
+            if (profileId == 1) {
+                post.setStatus(1); //0表示未审核，1表示审核 -1删除
+            } else {
+                post.setStatus(0); //0表示未审核，1表示审核 -1删除
+            }
             res = postService.save(post);
             id = post.getId();
 
@@ -183,12 +192,14 @@ public class PostController extends BaseController {
             categoryService.updateById(category);
         } else {
             //编辑
-            Assert.isTrue(one.getUserId().equals(ShiroUtil.getProfileId()), "您没有权限修改不属于您的文章");
+            Assert.isTrue(one.getUserId().equals(profileId), "您没有权限修改不属于您的文章");
             one.setModified(new Date());
             one.setTitle(post.getTitle());
             one.setCategoryId(post.getCategoryId());
             one.setContent(post.getContent());
-            one.setStatus(0);
+            if (profileId != 1) {
+                one.setStatus(0);
+            }
             res = postService.updateById(one);
             id = one.getId();
         }
@@ -264,5 +275,26 @@ public class PostController extends BaseController {
         comment.setVoteUp(comment.getVoteUp() + (ok ? -1 : 1));
         commentService.updateById(comment);
         return Result.success();
+    }
+
+    /**
+     * 上传博客图片
+     */
+    @ResponseBody
+    @PostMapping("/upload")
+    public Map<String, Object> upload(@RequestParam("editormd-image-file") MultipartFile file) {
+        try {
+            Result upload = uploadUtil.upload(UploadUtil.TYPE_POST, file);
+            if (upload.getStatus() == 0) {
+                return MapUtil.builder("message", (Object) "上传成功")
+                        .put("success", 1)
+                        .put("url", upload.getData().toString()).build();
+            }
+            return MapUtil.builder("message", (Object) upload.getMsg())
+                    .put("success", 0).build();
+        } catch (IOException e) {
+            return MapUtil.builder("message", (Object) "上传成功")
+                    .put("success", 0).build();
+        }
     }
 }

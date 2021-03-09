@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.ServletRequestUtils;
 import top.codecrab.eblog.service.*;
+import top.codecrab.eblog.utils.UploadUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,6 +60,9 @@ public class BaseController {
 
     @Autowired
     protected ChatService chatService;
+
+    @Autowired
+    protected UploadUtil uploadUtil;
 
     /**
      * 抽取获取分页bean

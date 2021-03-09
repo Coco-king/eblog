@@ -1,6 +1,6 @@
 server:
-  port: 9090
-  dns-addr: http://localhost:9090
+  port: 80
+  dns-addr: http://www.codecrab.top
 spring:
   application:
     name: eblog
@@ -23,40 +23,10 @@ spring:
       classic_compatible: true
       datetime_format: yyyy-MM-dd HH:mm:ss
       number_format: 0.##
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/eblog?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    # 启用mp sql性能分析
-    # driver-class-name: com.p6spy.engine.spy.P6SpyDriver
-    # url: jdbc:p6spy:mysql://localhost:3306/eblog?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai
-    username: root
-    password: root
-  redis:
-    host: 127.0.0.1
-    port: 6379
-    database: 0
-    timeout: 1800000
-    lettuce:
-      pool:
-        max-active: 20
-        max-wait: -1
-        max-idle: 5
-        min-idle: 0
   data:
     elasticsearch:
       repositories:
         enabled: true
-  elasticsearch:
-    rest:
-      uris: 127.0.0.1:9200,127.0.0.1:9201
-  rabbitmq:
-    host: 127.0.0.1
-    virtual-host: /
-    username: guest
-    password: guest
-    connection-timeout: 5000
-    template:
-      exchange: EBLOG_POST_EXCHANGE
   mail:
     protocol: smtp
     host: smtp.qq.com
@@ -70,10 +40,34 @@ spring:
         smtp:
           ssl:
             enable: true
-shiro-redis:
-  enabled: true
-  redis-manager:
-    host: 127.0.0.1:6379
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://mysql:3306/eblog?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: WangXX666..666
+  redis:
+    host: redis
+    port: 6379
+    database: 0
+    timeout: 1800000
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1
+        max-idle: 5
+        min-idle: 0
+  elasticsearch:
+    rest:
+      uris: elasticsearch:9200
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    virtual-host: /
+    username: codecrab
+    password: WangXX666..666
+    connection-timeout: 5000
+    template:
+      exchange: EBLOG_POST_EXCHANGE
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**Mapper.xml
 file:
@@ -84,3 +78,7 @@ im:
     port: 9326
   user:
     default-avatar: https://img.imgdb.cn/item/603a412e5f4313ce2536582f.jpg,https://img.imgdb.cn/item/603a412e5f4313ce25365838.jpg,https://img.imgdb.cn/item/603a412e5f4313ce2536583a.jpg,https://img.imgdb.cn/item/60437b4a360785be54b9cd2a.jpg,https://img.imgdb.cn/item/60437b4a360785be54b9cd2f.jpg,https://img.imgdb.cn/item/60437b4a360785be54b9cd35.jpg,https://img.imgdb.cn/item/60437b4a360785be54b9cd3c.jpg,https://img.imgdb.cn/item/60437b4a360785be54b9cd44.jpg,https://img.imgdb.cn/item/60437b7e360785be54b9e5a5.jpg,https://img.imgdb.cn/item/60437b7e360785be54b9e5aa.jpg
+shiro-redis:
+  enabled: true
+  redis-manager:
+    host: redis:6379

@@ -11,6 +11,7 @@
             <link rel="shortcut icon" href="https://img.imgdb.cn/item/6038ab575f4313ce25159507.png" type="image/x-icon">
             <link rel="stylesheet" href="/res/layui/css/layui.css">
             <link rel="stylesheet" href="/res/css/global.css">
+            <link rel="stylesheet" href="/res/css/editormd.min.css">
 
             <script src="/res/layui/layui.js"></script>
             <script src="/res/js/jquery.min.js"></script>
@@ -19,6 +20,14 @@
             <script src="/res/js/stomp.js"></script>
             <script src="/res/js/im.js"></script>
             <script src="/res/js/chat.js"></script>
+            <script src="/res/js/editormd.min.js"></script>
+            <script src="/res/lib/marked.min.js"></script>
+            <script src="/res/lib/prettify.min.js"></script>
+            <script src="/res/lib/raphael.min.js"></script>
+            <script src="/res/lib/underscore.min.js"></script>
+            <script src="/res/lib/sequence-diagram.min.js"></script>
+            <script src="/res/lib/flowchart.min.js"></script>
+            <script src="/res/lib/jquery.flowchart.min.js"></script>
         </head>
         <body>
 
@@ -89,6 +98,36 @@
                 }
               });
             </script>
+
+            <script type="text/javascript">
+
+
+              $(function () {
+                var testEditor = editormd("test-editormd", {
+                  width: "100%",
+                  // height: 640,
+                  path: '/res/lib/',
+                  //syncScrolling : false,
+                  saveHTMLToTextarea: true,    // 保存 HTML 到 Textarea
+                  searchReplace: true,
+                  //watch : false,                // 关闭实时预览
+                  htmlDecode: "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启
+                  //toolbar  : false,             //关闭工具栏
+                  //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
+                  emoji: true,
+                  taskList: true,
+                  tocm: true,         // Using [TOCM]
+                  tex: true,                   // 开启科学公式TeX语言支持，默认关闭
+                  flowChart: true,             // 开启流程图支持，默认关闭
+                  sequenceDiagram: true,       // 开启时序/序列图支持，默认关闭,
+                  imageUpload: true,
+                  imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                  imageUploadURL: "/upload",
+                  codeFold: true,//折叠代码块
+                });
+              });
+            </script>
+
         </body>
     </html>
 

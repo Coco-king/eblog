@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,8 @@ import top.codecrab.eblog.vo.PostVo;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * <p>
@@ -117,6 +120,15 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
     }
 
     /**
+     * 重置每周热议
+     */
+    @Override
+    public void deleteRedis(Long postId) {
+        redisUtil.del("week:hot:postInfo:" + postId, "week:hot:post");
+        initWeekHot();
+    }
+
+    /**
      * 把阅读量缓存到redis中
      */
     @Override
@@ -168,6 +180,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         //逻辑删除评论和消息
         commentService.updateStatus(new QueryWrapper<Comment>().eq("post_id", id), -1);
         messageService.updateStatus(new QueryWrapper<UserMessage>().eq("post_id", id), -1);
+        //重置北周热议
+        deleteRedis(id);
     }
 
     @Override

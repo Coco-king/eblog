@@ -24,6 +24,7 @@ public class UploadUtil {
     Consts consts;
 
     public final static String TYPE_AVATAR = "avatar";
+    public final static String TYPE_POST = "post";
 
     public Result upload(String type, MultipartFile file) throws IOException {
 
@@ -31,7 +32,11 @@ public class UploadUtil {
             return Result.fail("上传失败");
         }
 
-        if (file.getSize() > 500 * 1024) {
+        if ("avatar".equalsIgnoreCase(type) && file.getSize() > 500 * 1024) {
+            return Result.fail("图片大小超出限制");
+        }
+
+        if ("post".equalsIgnoreCase(type) && file.getSize() > 5000 * 1024) {
             return Result.fail("图片大小超出限制");
         }
 
@@ -44,12 +49,12 @@ public class UploadUtil {
         // 文件上传后的路径
         String filePath = consts.getUploadDir();
 
+        AccountProfile profile = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
         if ("avatar".equalsIgnoreCase(type)) {
-            AccountProfile profile = (AccountProfile) SecurityUtils.getSubject().getPrincipal();
             fileName = "/avatar/avatar_" + profile.getId() + suffixName;
 
         } else if ("post".equalsIgnoreCase(type)) {
-            fileName = "/post/post_" + DateUtil.format(new Date(), DatePattern.PURE_DATETIME_MS_PATTERN) + suffixName;
+            fileName = "/post/" + profile.getId() + "/post_" + DateUtil.format(new Date(), DatePattern.PURE_DATETIME_MS_PATTERN) + suffixName;
         }
 
         File dest = new File(filePath + fileName);

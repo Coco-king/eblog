@@ -62,6 +62,7 @@ public class AdminServiceImpl implements AdminService {
             //逻辑删除评论和消息
             commentService.updateStatus(new QueryWrapper<Comment>().eq("post_id", id), -1);
             messageService.updateStatus(new QueryWrapper<UserMessage>().eq("post_id", id), -1);
+            postService.deleteRedis(id);
         } else if ("stick".equals(field)) {
             //置顶
             post.setLevel(rank);

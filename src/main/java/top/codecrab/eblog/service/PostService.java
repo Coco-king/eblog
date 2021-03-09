@@ -35,4 +35,6 @@ public interface PostService extends IService<Post> {
     Result postReply(Long postId, String content);
 
     Result jiedaDelete(Long id);
+
+    void deleteRedis(Long postId);
 }
