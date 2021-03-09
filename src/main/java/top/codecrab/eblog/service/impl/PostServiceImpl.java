@@ -167,6 +167,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
 
         //逻辑删除文章
         post.setStatus(-1);
+        post.setCommentCount(0);
         this.updateById(post);
 
         //该分类下文章个数减1
@@ -181,7 +182,7 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         commentService.updateStatus(new QueryWrapper<Comment>().eq("post_id", id), -1);
         messageService.updateStatus(new QueryWrapper<UserMessage>().eq("post_id", id), -1);
         //重置北周热议
-        deleteRedis(id);
+//        deleteRedis(id);
     }
 
     @Override

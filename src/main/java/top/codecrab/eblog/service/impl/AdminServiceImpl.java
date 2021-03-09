@@ -47,6 +47,7 @@ public class AdminServiceImpl implements AdminService {
 
         if ("delete".equals(field)) {
             //删除 -- 逻辑删除
+            post.setCommentCount(0);
             post.setStatus(-1);
 
             //该分类下文章个数减1
@@ -62,7 +63,7 @@ public class AdminServiceImpl implements AdminService {
             //逻辑删除评论和消息
             commentService.updateStatus(new QueryWrapper<Comment>().eq("post_id", id), -1);
             messageService.updateStatus(new QueryWrapper<UserMessage>().eq("post_id", id), -1);
-            postService.deleteRedis(id);
+//            postService.deleteRedis(id);
         } else if ("stick".equals(field)) {
             //置顶
             post.setLevel(rank);
