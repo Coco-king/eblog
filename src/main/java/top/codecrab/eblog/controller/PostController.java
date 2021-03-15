@@ -282,19 +282,19 @@ public class PostController extends BaseController {
      */
     @ResponseBody
     @PostMapping("/upload")
-    public Map<String, Object> upload(@RequestParam("editormd-image-file") MultipartFile file) {
+    public Map<String, Object> upload(@RequestParam("file") MultipartFile file) {
         try {
             Result upload = uploadUtil.upload(UploadUtil.TYPE_POST, file);
             if (upload.getStatus() == 0) {
                 return MapUtil.builder("message", (Object) "上传成功")
-                        .put("success", 1)
+                        .put("success", 1).put("status", 0)
                         .put("url", upload.getData().toString()).build();
             }
             return MapUtil.builder("message", (Object) upload.getMsg())
-                    .put("success", 0).build();
+                    .put("success", 0).put("status", -1).build();
         } catch (IOException e) {
             return MapUtil.builder("message", (Object) "上传成功")
-                    .put("success", 0).build();
+                    .put("success", 0).put("status", -1).build();
         }
     }
 }

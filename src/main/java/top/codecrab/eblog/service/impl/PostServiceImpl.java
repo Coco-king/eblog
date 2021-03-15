@@ -169,11 +169,14 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         post.setStatus(-1);
         post.setCommentCount(0);
         this.updateById(post);
+        //更新每周热议
+        redisUtil.zSet("week:hot:post", id, 0);
+        redisUtil.del("week:hot:postInfo:" + id);
 
         //该分类下文章个数减1
         Category category = categoryService.getById(post.getCategoryId());
         Assert.notNull(category, "找不到分类");
-        category.setPostCount(category.getPostCount() - 1);
+        category.setPostCount(Math.max(category.getPostCount() - 1, 0));
         categoryService.updateById(category);
 
         //删除关联的收藏
@@ -293,12 +296,13 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         //表示删除自己文章下的评论
         if (p != null) {
             this.deleteReply(comment, postId, p);
+            return Result.success();
         }
         return Result.fail("您只能删除自己或自己文章下的评论");
     }
 
     private void deleteReply(Comment comment, Long postId, Post post) {
-        post.setCommentCount(post.getCommentCount() - 1);
+        post.setCommentCount(Math.max(post.getCommentCount() - 1, 0));
         this.updateById(post);
 
         comment.setStatus(-1);

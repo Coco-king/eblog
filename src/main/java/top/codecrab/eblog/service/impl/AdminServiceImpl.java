@@ -14,30 +14,31 @@ import top.codecrab.eblog.entity.Post;
 import top.codecrab.eblog.entity.UserMessage;
 import top.codecrab.eblog.search.mq.MqTypes;
 import top.codecrab.eblog.service.*;
+import top.codecrab.eblog.utils.RedisUtil;
 
 @Service
 public class AdminServiceImpl implements AdminService {
 
     @Autowired
-    protected PostService postService;
+    private PostService postService;
 
     @Autowired
-    protected CommentService commentService;
+    private CommentService commentService;
 
     @Autowired
-    protected UserService userService;
+    private UserMessageService messageService;
 
     @Autowired
-    protected UserMessageService messageService;
+    private UserCollectionService collectionService;
 
     @Autowired
-    protected UserCollectionService collectionService;
+    private CategoryService categoryService;
 
     @Autowired
-    protected CategoryService categoryService;
+    private AmqpTemplate amqpTemplate;
 
     @Autowired
-    protected AmqpTemplate amqpTemplate;
+    private RedisUtil redisUtil;
 
     @Override
     @Transactional
@@ -49,11 +50,15 @@ public class AdminServiceImpl implements AdminService {
             //删除 -- 逻辑删除
             post.setCommentCount(0);
             post.setStatus(-1);
+            //更新每周热议
+            redisUtil.zSet("week:hot:post", id, 0);
+            redisUtil.del("week:hot:postInfo:" + id);
 
             //该分类下文章个数减1
             Category category = categoryService.getById(post.getCategoryId());
             Assert.notNull(category, "找不到分类");
-            categoryService.updateById(category.setPostCount(category.getPostCount() - 1));
+            category.setPostCount(Math.max(category.getPostCount() - 1, 0));
+            categoryService.updateById(category);
 
             //发送消息到队列
             amqpTemplate.convertAndSend(MqTypes.POST_REMOVE_ROUTING_KEY, id);

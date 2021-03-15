@@ -118,9 +118,13 @@
                                         <i class="iconfont icon-caina" title="最佳答案"></i>
                                     </#if>
                                 </div>
-                                <div class="detail-body jieda-body photos" id="comm-content"
+                                <#--<div class="detail-body jieda-body photos" id="comm-content"
                                      style="line-height: 10px;height: auto;width: auto">
-                                    <textarea id="append-test" style="display:none;">${comm.content}</textarea>
+                                    <textarea class="comm-test" style="display:none;">${comm.content}</textarea>
+                                </div>-->
+                                <div class="detail-body comm-body jieda-body photos"
+                                     style="line-height: 10px;height: auto;width: auto">
+                                    ${comm.content}
                                 </div>
                                 <div class="jieda-reply">
                                     <#--<span class="jieda-zan" type="zan">
@@ -157,13 +161,13 @@
                             <div class="layui-form-item layui-form-text">
                                 <a name="comment"></a>
                                 <div class="layui-input-block">
-                                    <#--<textarea id="L_content" name="content" required lay-verify="required"
+                                    <textarea id="L_content" name="content" required lay-verify="required"
                                               placeholder="请输入内容" class="layui-textarea fly-editor"
-                                              style="height: 150px;"></textarea>-->
-                                    <div id="test-editormd">
+                                              style="height: 150px;"></textarea>
+                                    <#--<div id="test-editormd">
                                         <textarea style="display:none;" required lay-verify="required"
                                                   name="content"></textarea>
-                                    </div>
+                                    </div>-->
                                 </div>
                             </div>
                             <div class="layui-form-item">
@@ -183,12 +187,7 @@
       layui.cache.page = 'jie';
 
       $(function () {
-        var testEditor = editormd("test-editormd", {
-          height: 300,
-          path: '/res/lib/',
-          autoFocus: false
-        });
-        var testEditormdView, testEditormdView2;
+        var testEditormdView;
         testEditormdView = editormd.markdownToHTML("md-body", {
           htmlDecode: "style,script,iframe",  // you can filter tags decode
           emoji: true,
@@ -197,13 +196,14 @@
           flowChart: true,  // 默认不解析
           sequenceDiagram: true,  // 默认不解析
         });
-        testEditormdView2 = editormd.markdownToHTML("comm-content", {
-          htmlDecode: "style,script,iframe",  // you can filter tags decode
-          emoji: true,
-          taskList: true,
-          tex: true,  // 默认不解析
-          flowChart: true,  // 默认不解析
-          sequenceDiagram: true,  // 默认不解析
+
+        layui.use(['fly', 'face'], function () {
+          var fly = layui.fly;
+
+          $('.comm-body').each(function () {
+            var othis = $(this), html = othis.html();
+            othis.html(fly.content(html));
+          });
         });
       });
     </script>

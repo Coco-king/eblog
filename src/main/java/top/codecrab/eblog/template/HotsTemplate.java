@@ -36,6 +36,7 @@ public class HotsTemplate extends TemplateDirective {
             //取出排序集合的值和排序分数(评论数)
             Object postId = tuple.getValue();
             Double commentCount = tuple.getScore();
+            if (commentCount == null || 0 == commentCount) continue;
             //包装要返回给页面的键值对
             Map<String, Object> map = new HashMap<>();
             map.put("id", postId);

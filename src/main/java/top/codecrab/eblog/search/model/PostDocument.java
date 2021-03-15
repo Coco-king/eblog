@@ -1,6 +1,5 @@
 package top.codecrab.eblog.search.model;
 
-import cn.hutool.core.date.DatePattern;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.DateFormat;

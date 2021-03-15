@@ -124,6 +124,9 @@
                   imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
                   imageUploadURL: "/upload",
                   codeFold: true,//折叠代码块
+                  toolbarIcons: function () {  //自定义工具栏，后面有详细介绍
+                    return editormd.toolbarModes['full']; // full, simple, mini
+                  },
                 });
               });
             </script>
